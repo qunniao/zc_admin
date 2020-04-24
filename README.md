@@ -1,0 +1,25 @@
+# 项目结构
+case-add 案例添加
+case-list 案例列表
+caselabel-add 添加案例分类
+caseone-list  案例一级分类
+casetwo-list  案例二级分类
+category-add 自助报价类别添加
+category-list 自助报价类别列表
+categorytwo-list 自助报价二级类别列表
+index 首页
+login 登录界面
+offer-list 报价列表
+offerdetail 报价详情
+category-add 报价列表添加
+order-list 订单列表
+orderdetail 订单详情
+product-list 产品列表
+productone-list 一级分类 
+producttwo-list 二级分类 
+pwd-change 修改密码
+shop-add 添加产品修改产品 修改产品暂无
+unicode 图标
+user-list 用户详情
+userdetail 用户详情
+welcome 首页右侧内容

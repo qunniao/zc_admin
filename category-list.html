@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>自助报价类别列表</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <style>
+          .table-item{
+            text-align: center
+          }
+        </style>
+    </head>
+
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <button class="layui-btn layui-btn-danger" id="del">
+                                <i class="layui-icon"></i>批量删除</button>
+                            <button class="layui-btn" onclick="xadmin.open('添加标签','./category-add.html?labelid=0&type=1&funtype=1',900,700)">
+                                  添加</button>
+                        </div>
+                                
+                        <div class="layui-card-body ">
+                            <table class="layui-table" id="tableOut" lay-filter="tableOut"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/html" id="cateimg">
+            <img src='{{d.cover}}'>
+        </script>
+        <script type="text/html" id="barDemo">
+          <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('添加二级分类','./category-add.html?cateid={{d.id}}&type=2&funtype=1',800,600)" lay-event="detail">添加</a>
+          <a class="layui-btn layui-btn-primary layui-btn-xs" onclick="xadmin.open('修改','./category-add.html?cateid={{d.id}}&type=1&funtype=2',800,600)">修改</a>
+      </script>
+        <script>
+          layui.use(['form','table'], function(){
+            form = layui.form;
+            table=layui.table;
+            var _table = table.render({
+                        elem: '#tableOut',
+                        url: Url+'category/list', //数据接口
+                        page: true, //开启分页
+                        request: {
+                            pageName: 'current' //页码的参数名称，默认：page
+                            ,limitName: 'size' //每页数据量的参数名，默认：limit
+                        },
+                        parseData: function(res){ //res 即为原始返回的数据
+                          return {
+                            "code": res.status, //解析接口状态
+                            "msg": res.descripition, //解析提示文本
+                            "count": res.data.total, //解析数据长度
+                            "data": res.data.records //解析数据列表
+                          };
+                        },
+                        response: {
+                          statusName: 'code' //数据状态的字段名称，默认：code
+                          ,statusCode: 0 //成功的状态码，默认：0
+                          ,msgName: 'msg' //状态信息的字段名称，默认：msg
+                          ,countName: 'count' //数据总数的字段名称，默认：count
+                          ,dataName: 'data' //数据列表的字段名称，默认：data
+                        },
+//                         width: 790,
+                        height: 1200,
+                        limits: [10],
+                        method: "GET",
+//                         where: getWhere(data, LuckyactivityID),
+                        page: {},
+                        cols: [[
+                            { type: 'checkbox', width: 90 ,toolbar: '#checkbox'},
+                            {
+                                field: 'btn',
+                               width: 70,
+                                align: 'center',
+                              templet: function (d) {
+                                  return '<a style="cursor: pointer;font-size:30px;" lay-event="addRowTable">+</a>'
+                               }
+                           },
+                            { field: 'id', title: 'id', width: 100, align: 'center' },
+                            { field: 'typeName', title: '属性名', width: 100, align: 'center' },
+                            { field: 'cover', title: '图标', width: 100, align: 'center',toolbar: '#cateimg'  },
+                            { field: 'gmtModified', title: '操作', width: 260,toolbar: '#barDemo'  },
+                        ]], done: function (res, page, count) {
+                           
+                        }
+                    });
+                      $('body').on('click', '.del', function(e) {
+                       layer.confirm('确认要删除吗？'+e.currentTarget.id,function(index){
+                          let ids=[]
+                          ids.push(e.currentTarget.id)
+                            _ajax({
+                                      url : "category/delete",  // url---->地址
+                                      type : "DELETE",   // type ---> 请求方式
+                                      async : true,   // async----> 同步：false，异步：true 
+                                      data : {        //传入信息
+                                        ids  :ids,
+                                      },
+                                      success : function(data){  
+                                        let datas =JSON.parse(data);
+                                        if(datas.status==0){
+                                            layer.msg('删除成功', {icon: 1});
+                                            pageNum=1
+                                            table.reload('tableOut', {
+                                              where: {
+                                              }
+                                              ,page: {
+                                                curr:pageNum
+                                              }
+                                            });
+                                          }
+                                      }
+                              })
+                          });
+                      });
+                    table.on('tool(tableOut)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                        var data = obj.data; //获得当前行数据
+                        console.log(obj)
+                        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                        // 异常不要用它原来的这个作为tr的dom
+                        var tr = obj.tr; //获得当前行 tr 的DOM对象
+                        var $this = $(this);
+                        var tr = $this.parents('tr');
+                        let classname ='catelistname'+obj.data.id
+                        let trnum =$('[name="'+classname+'"]').length
+                        // console.log($('.'+classname).length)
+                        // var trIndex = tr.data('index');
+                        if (layEvent === 'addRowTable') {
+                          if(trnum==0){
+                            $(this).attr('lay-event', 'no');
+                            var _html=[]
+                            // let 
+                            // var _html = [
+                            //     '<tr class="table-item" name="'+classname+'">',
+                            //     ' <td><input type="checkbox" name="" lay-skin="primary"></td>',
+                            //     '<td  style="padding: 6px 12px;"></td>',
+                            //     '<td  style="padding: 6px 12px;">123</td>',
+                            //     '<td  style="padding: 6px 12px;">123</td>',
+                            //     '<td  style="padding: 6px 12px;">123</td>',
+                            //     '</tr>',
+                                
+                            // ];
+                            let pushlist =obj.data.category
+                            for(let i=0;i<pushlist.length;i++){
+                              let onclicklist="xadmin.open('查看三级分类','./categorytwo-list.html?caseid="+pushlist[i].id+"',1000,800)"
+                              console.log()
+                              let onclickchange = "xadmin.open('修改','./category-add.html?cateid="+pushlist[i].id+"&type=2&funtype=2',800,600)"
+                              let pushdata ='<tr class="table-item" name="'+classname+'"><td data-field="0" style="padding-left:28px"></td><td  style="padding: 6px 12px;"></td><td   style="padding: 6px 12px;">'+pushlist[i].id+'</td><td  style="padding: 6px 12px;">'+pushlist[i].typeName+'</td><td  style="padding: 6px 12px;"><img src="'+pushlist[i].cover+'"></td><td class="td-manage"><button class="layui-btn layui-btn-primary layui-btn-xs" onclick="'+onclicklist+'" >查看</button><button class="layui-btn layui-btn-primary layui-btn-xs" onclick="'+onclickchange+'" >修改</button><button class="layui-btn layui-btn-primary layui-btn-xs del" id="'+pushlist[i].id+'" lay-event="change">删除</button></td></tr>'
+                              // '<tr class="table-item" name="'+classname+'">',
+                              //   '<td><input type="checkbox" name="" lay-skin="primary"></td>',
+                              //   '<td  style="padding: 6px 12px;"></td>',
+                              //   '<td  style="padding: 6px 12px;">'+pushlist[i].id+'</td>',
+                              //   '<td  style="padding: 6px 12px;">'+pushlist[i].typeName+'</td>',
+                              //   '<td  style="padding: 6px 12px;"><img src="'+pushlist[i].cover+'"></td><td class="td-manage"><button class="layui-btn layui-btn-primary layui-btn-xs"  >查看</button><button class="layui-btn layui-btn-primary layui-btn-xs" >修改</button><button class="layui-btn layui-btn-primary layui-btn-xs" >查看下级分类</button></td>
+                              //   // '<td  style="padding: 6px 12px;">'+pushlist[i].id+'</td>',
+                              //   // '<td  style="padding: 6px 12px;">'+pushlist[i].id+'</td>',
+                              //   '</tr>',
+                              _html.push(pushdata)
+                            }
+                            tr.after(_html.join('\n'));
+                            renderForm()
+                          }else{
+                            $(this).attr('lay-event', 'no');
+                            $('[name="'+classname+'"]').show()
+                          }
+                        }else{
+                          $(this).attr('lay-event', 'addRowTable');
+                          $('[name="'+classname+'"]').hide()
+                        }
+    
+                });
+          });
+           /*用户-删除*/
+          $('#del').on('click', function  (argument) {
+                var ids = [];
+                console.log(layui.table.checkStatus('tableOut').data)
+                let checkdata=layui.table.checkStatus('tableOut').data
+                for(let i=0;i<checkdata.length;i++){
+                   ids.push(checkdata[i].id)
+                }
+          
+                layer.confirm('确认要删除吗？'+ids.toString(),function(index){
+                  _ajax({
+                            url : "category/delete",  // url---->地址
+                            type : "DELETE",   // type ---> 请求方式
+                            async : true,   // async----> 同步：false，异步：true 
+                            data : {        //传入信息
+                              ids  :ids,
+                            },
+                            success : function(data){  
+                              let datas =JSON.parse(data);  
+                              if(datas.status==0){
+                                  layer.msg('删除成功', {icon: 1});
+                                  pageNum=1
+                                  table.reload('tableOut', {
+                                    where: {
+                                    }
+                                    ,page: {
+                                      curr:pageNum
+                                    }
+                                  });
+                              }
+                            }
+                    })
+                    //捉到所有被选中的，发异步进行删除
+                    // console.log(ids)
+                    // layer.msg('删除成功', {icon: 1});
+                    // $(".layui-form-checked").not('.header').parents('tr').remove();
+                });
+              }
+            );
+
+          // 分类展开收起的分类的逻辑
+          // 
+          $(function(){
+            $("tbody.x-cate tr[fid!='0']").hide();
+            // 栏目多级显示效果
+            $('.x-show').click(function () {
+                if($(this).attr('status')=='true'){
+                    $(this).html('&#xe625;'); 
+                    $(this).attr('status','false');
+                    cateId = $(this).parents('tr').attr('cate-id');
+                    $("tbody tr[fid="+cateId+"]").show();
+               }else{
+                    cateIds = [];
+                    $(this).html('&#xe623;');
+                    $(this).attr('status','true');
+                    cateId = $(this).parents('tr').attr('cate-id');
+                    getCateId(cateId);
+                    for (var i in cateIds) {
+                        $("tbody tr[cate-id="+cateIds[i]+"]").hide().find('.x-show').html('&#xe623;').attr('status','true');
+                    }
+               }
+            })
+          })
+          
+          var cateIds = [];
+          function getCateId(cateId) {
+              $("tbody tr[fid="+cateId+"]").each(function(index, el) {
+                  id = $(el).attr('cate-id');
+                  cateIds.push(id);
+                  getCateId(id);
+              });
+          }
+   
+        </script>
+    </body>
+</html>

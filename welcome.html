@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <style>
+           .layui-rows{
+                width: 40%;
+                margin-top: 20px;
+                min-width: 600px;
+                float: left;
+            }
+            .layui-rows2{
+                width: 50%;
+                margin-top: 20px;
+                min-width: 700px;
+                margin-left: 10px;
+                float: left;
+            }
+
+            /* .layui-table{
+                width: 50%;
+            }
+            .layui-form{
+                width: 50%;
+            } */
+        </style>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <!-- <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <blockquote class="layui-elem-quote">欢迎管理员：
+                                <span class="x-red">test</span>！当前时间:2018-04-25 20:50:53
+                            </blockquote>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">数据统计</div>
+                        <div class="layui-card-body ">
+                            <ul class="layui-row layui-col-space10 layui-this x-admin-carousel x-admin-backlog">
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a href="javascript:;" class="x-admin-backlog-body">
+                                        <h3>总访问量</h3>
+                                        <p>
+                                            <cite id="allvist"></cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a href="javascript:;" class="x-admin-backlog-body">
+                                        <h3>用户总数</h3>
+                                        <p>
+                                            <cite id="allaccount"></cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a href="javascript:;" class="x-admin-backlog-body">
+                                        <h3>线上交易额</h3>
+                                        <p>
+                                            <cite id='onlineprice'></cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a href="javascript:;" class="x-admin-backlog-body">
+                                        <h3>产品总数</h3>
+                                        <p>
+                                            <cite id="allshop"></cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a href="javascript:;" class="x-admin-backlog-body">
+                                        <h3>案例总数</h3>
+                                        <p >
+                                            <cite id="allcase"></cite></p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm12 layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">最新一周新增用户</div>
+                        <div class="layui-card-body" style="min-height: 280px;">
+                            <div id="main1" class="layui-col-sm12" style="height: 300px;"></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-fluid" style="overflow: hidden;display: block;width: 100%;min-width: 1340px;">
+                    <!-- 表1 -->
+                        <div class="layui-row layui-rows  layui-col-space15">
+                                <div  style="overflow: hidden"><title style="float: left;display: block;">待处理需求</title><title style="float: right;display: block;" onclick="onpenparent('待处理需求','pendcllist.html')">更多>></title></div>
+                                <div class="layui-col-md12">
+                                    <div class="layui-card">
+                                        <div class="layui-card-body ">
+                                            <table class="layui-table layui-form">
+                                                <thead>
+                                                    <tr>
+                                                        <th>提交时间</th>
+                                                        <th>姓名</th>
+                                                        <th>联系电话</th>
+                                                        <th>操作</th></tr>
+                                                </thead>
+                                                <tbody id="tableone">
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 表2 -->
+                            <div class="layui-row layui-rows2  layui-col-space15">
+                                    <div  style="overflow: hidden"><title style="float: left;display: block;">待发货订单</title><title style="float: right;display: block;" onclick="onpenparent('待发货订单','order-list.html')">更多>></title></div>
+                                    <div class="layui-col-md12">
+                                        <div class="layui-card">
+                                            <div class="layui-card-body ">
+                                                <table class="layui-table layui-form">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>支付时间</th>
+                                                            <th>用户名称</th>
+                                                            <th>产品名称</th>
+                                                            <th>产品图片</th>
+                                                            <th>操作</th></tr>
+                                                    </thead>
+                                                    <tbody id="tabletwo">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+
+                <style id="welcome_style"></style>
+            </div>
+        </div>
+        </div>
+        <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+        <script src="js/index.js">
+            
+        </script>
+    </body>
+</html>

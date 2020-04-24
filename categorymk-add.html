@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>自助报价模块</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="./css/font.css">
+        <link rel="stylesheet" href="./css/xadmin.css">
+        <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="./js/xadmin.js"></script>
+        <script type="text/javascript" src="./js/allajax.js"></script>
+        <style>
+            .layui-upload-list>img{
+                width: 100px;
+                height: 100px;
+            }
+            .layui-form-label{
+                width:60px;
+                text-align: left;
+            }
+            .csbox{
+                margin-top: 10px;
+                overflow: hidden;
+            }
+            .csbox>label{
+                line-height: 30px;
+            }
+            .csbox>input{
+                float: left;
+                margin-right: 20px;
+                width: 200px;
+            }
+            .layui-input-block{
+                margin-top: 10px;
+                margin-left: 0px;
+            }
+            .csboxtwo{
+                overflow: hidden;
+                width: 300px;
+                /* clear: both; */
+                margin-left: 220px;
+                margin-top: 10px;
+            }
+            .csboxtwo>input{
+                float: left;
+                margin-right: 20px;
+                text-align: center;
+                width: 200px;
+            }
+            .csboxtwo>label{
+                float: left;
+                line-height: 30px;
+            }
+        </style>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]--></head>
+    
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>模块名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="moduleName" name="moduleName" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>价格</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="price" name="price" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>工时</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="labor" name="labor" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button></div>
+                    </form>
+                    </div>
+                    </div>
+        <script>
+            function del(e){
+                e.parentNode.parentNode.removeChild(e.parentNode);
+            }
+            let usrl =  decodeURI(location.search); //获取url中"?"符后的字串
+            let caseid= usrl.split('&')[0].split('=')[1]
+            let funtype= usrl.split('&')[1].split('=')[1]
+            console.log(caseid)
+            let fatherid =''
+            if(funtype!=-1){
+                _ajax({
+                        url : "/module/info/"+caseid,  // url---->地址
+                        type : "GET",   // type ---> 请求方式
+                        async : true,   // async----> 同步：false，异步：true 
+                        data : {        //传入信息
+                        },
+                        success : function(data){   //返回接受信息
+                            let datas =JSON.parse(data); 
+                                if(datas.status==0){
+                                     $('#moduleName').val(datas.data.moduleName)
+                                     $('#price').val(datas.data.price)
+                                     $('#labor').val(datas.data.labor)
+                                }
+                            }
+                        })                
+            }
+            
+            
+        layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                form.on('select(changepro)', function(data){
+                    getprotwo(data.value)
+
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(datas) {
+                    console.log($('#cover')[0])
+                        if(funtype==-1){
+                            _ajax({
+                                url : "/module",  // url---->地址
+                                type : "POST",   // type ---> 请求方式
+                                async : true,   // async----> 同步：false，异步：true 
+                                data : {        //传入信息
+                                    cid:caseid,
+                                    moduleName  :datas.field.moduleName ,
+                                    price :datas.field.price ,
+                                    labor :datas.field.labor 
+                                },
+                                success : function(data){   //返回接受信息
+                                    let datas =JSON.parse(data); 
+
+                                    if(datas.status==0){
+                                        layer.msg('添加成功', {icon: 1},function(){
+                                            closeiframe()
+                                        });
+                                    }else{
+                                        layer.msg('添加失败', {icon: 5})
+                                    }
+                                }
+                            })
+                        }else{
+                            _ajax({
+                                url : "module",  // url---->地址
+                                type : "PUT",   // type ---> 请求方式
+                                async : true,   // async----> 同步：false，异步：true 
+                                data : {        //传入信息
+                                    id:caseid,
+                                    cid:funtype,
+                                    moduleName  :datas.field.moduleName ,
+                                    price :datas.field.price ,
+                                    labor :datas.field.labor 
+                                },
+                                success : function(data){   //返回接受信息
+                                console.log(data)
+                                let datas =JSON.parse(data);  
+                                    if(datas.status==0){
+                                        layer.msg('修改成功', {icon: 1},function(){
+                                            closeiframe()
+                                        });
+                                    }else{
+                                        layer.msg('修改失败', {icon: 5})
+                                    }
+                                }
+                            })
+                        }
+                    return false;
+                });
+
+            });</script>
+        <script>var _hmt = _hmt || []; (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();</script>
+    </body>
+
+</html>
